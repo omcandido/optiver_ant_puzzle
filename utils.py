@@ -1,13 +1,7 @@
-from abc import abstractmethod
 from enum import Enum
 import numpy as np
-from typing import Callable, List, Tuple
-from tqdm import tqdm
-import pandas as pd
-import seaborn as sns
+from typing import Callable, List
 import matplotlib.pyplot as plt
-from copy import deepcopy
-from IPython.display import display
 from collections import defaultdict
 
 class Point():
@@ -17,27 +11,12 @@ class Point():
         self.x=x                # x coordinate
         self.y=y                # y coordinate
         self.p=0                # probability of the ant being here
-        self.neighbours = []    # neighbouring points
 
     def __repr__(self):
         return "({}, {})".format(self.x, self.y)
 
     def __str__(self):
         return self.__repr__()
-
-def is_neighbour(p1:Point, p2:Point) -> bool:
-    """Check if the ant can go to p2 from p1 in the next step."""
-    if p1.x == p2.x:
-        if p1.y == p2.y - 10:
-            return True
-        if p1.y == p2.y + 10:
-            return True
-    if p1.y == p2.y:
-        if p1.x == p2.x - 10:
-            return True
-        if p1.x == p2.x + 10:
-            return True
-    return False
 
 def termination_1(x:int, y:int) -> bool:
     """Boundary condition in scenario #1"""
@@ -85,7 +64,7 @@ def plot_points(termination:Callable, bound:int=100, title="Figure") -> List[Poi
         title (str, optional): give a title to the figure. Defaults to "Figure".
 
     Returns:
-        list: list of points the ant can visit before reaching food containing their neighbours and initialised with probability 0.
+        list: list of points the ant can visit before reaching food.
     """
     # Get all the possible points.
     x = np.arange(-bound, bound, 10)
@@ -95,13 +74,6 @@ def plot_points(termination:Callable, bound:int=100, title="Figure") -> List[Poi
         for y_i in y:
             if not termination(x_i, y_i):
                 points.append(Point(x_i,y_i))
-
-    # Assign the neighbours.
-    for p1 in points:
-        for p2 in points:
-            if is_neighbour(p1,p2):
-                p1.neighbours.append(p2)
-
 
     for p in points:
         ax = plt.subplot(1, 1, 1)
